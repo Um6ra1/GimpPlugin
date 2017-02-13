@@ -1,9 +1,9 @@
 # Makefile
-TGT	= Test.exe
+TGT	= LensBlur2.exe
 
 OBJS = Main.obj 
 
-CFLAGS =# /LD
+CFLAGS = /Ox
 #INCLUDE =
 #LIBS	=
 #LIBS	+= -ladvapi32 -luser32 -lgdi32 -lkernel32 -lmingwex
@@ -20,5 +20,5 @@ $(TGT): $(OBJS)
 
 .PHONY: clean
 clean:
-	@rm -f *.obj*
+	@del -f *.obj*
 	@echo Cleaned.

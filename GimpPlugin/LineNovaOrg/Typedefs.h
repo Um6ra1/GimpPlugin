@@ -46,6 +46,49 @@ typedef struct
 } GimpPixelRgn;
 
 typedef enum {
+	GIMP_FOREGROUND_FILL,
+	GIMP_BACKGROUND_FILL,
+	GIMP_WHITE_FILL,
+	GIMP_TRANSPARENT_FILL,
+	GIMP_PATTERN_FILL
+} GimpFillType;
+typedef enum {
+	GIMP_NORMAL_MODE,
+	GIMP_DISSOLVE_MODE,
+	GIMP_BEHIND_MODE,
+	GIMP_MULTIPLY_MODE,
+	GIMP_SCREEN_MODE,
+	GIMP_OVERLAY_MODE,
+	GIMP_DIFFERENCE_MODE,
+	GIMP_ADDITION_MODE,
+	GIMP_SUBTRACT_MODE,
+	GIMP_DARKEN_ONLY_MODE,
+	GIMP_LIGHTEN_ONLY_MODE,
+	GIMP_HUE_MODE,
+	GIMP_SATURATION_MODE,
+	GIMP_COLOR_MODE,
+	GIMP_VALUE_MODE,
+	GIMP_DIVIDE_MODE,
+	GIMP_DODGE_MODE,
+	GIMP_BURN_MODE,
+	GIMP_HARDLIGHT_MODE,
+	GIMP_SOFTLIGHT_MODE,
+	GIMP_GRAIN_EXTRACT_MODE,
+	GIMP_GRAIN_MERGE_MODE,
+	GIMP_COLOR_ERASE_MODE
+} GimpLayerModeEffects;
+typedef enum {
+	GIMP_FG_BUCKET_FILL,      /*< desc="FG color fill" >*/
+	GIMP_BG_BUCKET_FILL,      /*< desc="BG color fill" >*/
+	GIMP_PATTERN_BUCKET_FILL  /*< desc="Pattern fill"  >*/
+} GimpBucketFillMode;
+typedef enum {
+	GIMP_CHANNEL_OP_ADD,       /*< desc="Add to the current selection"         >*/
+	GIMP_CHANNEL_OP_SUBTRACT,  /*< desc="Subtract from the current selection"  >*/
+	GIMP_CHANNEL_OP_REPLACE,   /*< desc="Replace the current selection"        >*/
+	GIMP_CHANNEL_OP_INTERSECT  /*< desc="Intersect with the current selection" >*/
+} GimpChannelOps;
+typedef enum {
   GIMP_RUN_INTERACTIVE,     /*< desc="Run interactively"         >*/
   GIMP_RUN_NONINTERACTIVE,  /*< desc="Run non-interactively"     >*/
   GIMP_RUN_WITH_LAST_VALS   /*< desc="Run with last used values" >*/
