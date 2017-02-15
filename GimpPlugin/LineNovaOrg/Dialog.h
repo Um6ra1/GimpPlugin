@@ -1,8 +1,7 @@
 #pragma once
 #include <Windows.h>
 
-typedef struct _PLUGIN_PARAMS
-{
+typedef struct _PLUGIN_PARAMS {
 	int	lineNum;
 	int	degCornerAngX100;	// Sharpness
 	int	offset;	// Offset radius

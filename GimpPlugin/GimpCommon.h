@@ -23,3 +23,4 @@
 #include "gimpbaseenums.h"
 #include "gimpbasetypes.h"
 #include "gimp.h"
+#include "gimpenums.h"

@@ -1,5 +1,5 @@
 # Makefile
-TGT	= LineNova
+TGT	= VsLineNova
 
 OBJS = Main.obj Dialog.obj Resource.res
 

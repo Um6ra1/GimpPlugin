@@ -21,7 +21,7 @@ int WINAPI	WinMain(HINSTANCE hInst, HINSTANCE, char *psCmdLine, int nCmdShow) {
 	Dll	libGimpBase("libgimpbase-2.0-0.dll");	if(libGimpBase.Invalid())	return -1;
 	Dll	libGimp("libgimp-2.0-0.dll");	if(libGimp.Invalid())	return -1;
 	
-	PFNFUNC	pfnGimpMain	=  libGimp.GetFunction("gimp_main");
+	Func	pfnGimpMain	=  libGimp.GetFunction("gimp_main");
 	
 	return (int)pfnGimpMain(&PLUG_IN_INFO, __argc, __argv);
 }
@@ -39,8 +39,8 @@ PCSTR	PLUGIN_MENUPATH		= "<Image>/Filters/VsNative-Plugin";
 void	Query() {
 	Dll	libGimp("libgimp-2.0-0.dll");	if(libGimp.Invalid())	return;
 
-	PFNFUNC pfnGimpInstallProcedure	= libGimp.GetFunction("gimp_install_procedure");
-	PFNFUNC pfnGimpPluginMenuRegister	= libGimp.GetFunction("gimp_plugin_menu_register");
+	Func pfnGimpInstallProcedure	= libGimp.GetFunction("gimp_install_procedure");
+	Func pfnGimpPluginMenuRegister	= libGimp.GetFunction("gimp_plugin_menu_register");
 	
 	static GimpParamDef	args[] = {
 		{GIMP_PDB_INT32, "run-mode", "Run mode"},

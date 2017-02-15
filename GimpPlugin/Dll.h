@@ -10,7 +10,7 @@ void	Msg(PCSTR psFmt, ...) {
 	::MessageBoxA(NULL, sMsg, "DEBUG MSG", MB_OK | MB_ICONEXCLAMATION);
 }
 
-typedef PVOID (__cdecl *PFNFUNC)(...);
+typedef PVOID (__cdecl *Func)(...);
 
 class Dll {
 	HMODULE	hModule_;
@@ -19,11 +19,11 @@ class Dll {
 public:
 	bool	Invalid()	{	return hModule_ == NULL;	}
 	
-	PFNFUNC	GetFunction(PCSTR psFuncName) {
-		FARPROC	pfnProc = ::GetProcAddress(hModule_, psFuncName);
+	Func	GetFunction(PCSTR psFuncName) {
+		FARPROC	pfProc = ::GetProcAddress(hModule_, psFuncName);
 		
-		if( !pfnProc )	::Msg("Not found such function: %s", psFuncName);
-		return (PFNFUNC)pfnProc;
+		if( !pfProc )	::Msg("Not found such function: %s", psFuncName);
+		return (Func)pfProc;
 	}
 	Dll(PCSTR psDllName) : bAlreadyLoaded_(false) {
 		if( (hModule_ = ::GetModuleHandle(psDllName)) ) {

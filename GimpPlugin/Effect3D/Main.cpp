@@ -1,8 +1,9 @@
 #define _USE_MATH_DEFINES
 #include <Windows.h>
-#include <cstdio>
+#include <vector>
 #include "../GimpCommon.h"
 #include "../Dll.h"
+#include "../Macros.h"
 
 #pragma comment(lib, "user32.lib")
 
@@ -21,34 +22,33 @@ int WINAPI	WinMain(HINSTANCE hInst, HINSTANCE, char *psCmdLine, int nCmdShow) {
 	Dll	libGimpBase("libgimpbase-2.0-0.dll");	if(libGimpBase.Invalid())	return -1;
 	Dll	libGimp("libgimp-2.0-0.dll");	if(libGimp.Invalid())	return -1;
 	
-	PFNFUNC	pfnGimpMain	=  libGimp.GetFunction("gimp_main");
+	Func	pfGimpMain	=  libGimp.GetFunction("gimp_main");
 	
-	return (int)pfnGimpMain(&PLUG_IN_INFO, __argc, __argv);
+	return (int)pfGimpMain(&PLUG_IN_INFO, __argc, __argv);
 }
 
-PCSTR	PLUGIN_NAME		= "plug-in-Hello";
-PCSTR	PLUGIN_BLURB	= "Hello world";
-PCSTR	PLUGIN_HELP		= "Hello world plugin on Windows.";
+PCSTR	PLUGIN_NAME		= "plug-in-Effect3D";
+PCSTR	PLUGIN_BLURB	= "Effect3D";
+PCSTR	PLUGIN_HELP		= "Misregistration effect.";
 PCSTR	PLUGIN_AUTHOR	= "Um6ra1";
 PCSTR	PLUGIN_COPYRIGHT		= "Copyright (C) Um6ra1";
-PCSTR	PLUGIN_DATE				= "2016";
-PCSTR	PLUGIN_MENULABEL	= "_HelloWorld";
+PCSTR	PLUGIN_DATE				= "2017";
+PCSTR	PLUGIN_MENULABEL	= "_Effect3D";
 PCSTR	PLUGIN_IMGTYPES		= "RGB*, GRAY*";
 PCSTR	PLUGIN_MENUPATH		= "<Image>/Filters/VsNative-Plugin";
 
 void	Query() {
 	Dll	libGimp("libgimp-2.0-0.dll");	if(libGimp.Invalid())	return;
 
-	PFNFUNC pfnGimpInstallProcedure	= libGimp.GetFunction("gimp_install_procedure");
-	PFNFUNC pfnGimpPluginMenuRegister	= libGimp.GetFunction("gimp_plugin_menu_register");
+	Func pfGimpInstallProcedure	= libGimp.GetFunction("gimp_install_procedure");
+	Func pfGimpPluginMenuRegister	= libGimp.GetFunction("gimp_plugin_menu_register");
 	
 	static GimpParamDef	args[] = {
 		{GIMP_PDB_INT32, "run-mode", "Run mode"},
 		{GIMP_PDB_IMAGE, "image", "Input image"},
 		{GIMP_PDB_DRAWABLE, "drawable", "Input drawable"},
 	};
-	//static GimpParamDef	results[] =
-	pfnGimpInstallProcedure (
+	pfGimpInstallProcedure (
 		PLUGIN_NAME,	PLUGIN_BLURB,
 		PLUGIN_HELP,		PLUGIN_AUTHOR,
 		PLUGIN_COPYRIGHT,		PLUGIN_DATE,
@@ -58,20 +58,83 @@ void	Query() {
 		args, NULL
 	);
 
-	int status = (int)pfnGimpPluginMenuRegister(PLUGIN_NAME, PLUGIN_MENUPATH);
+	int status = (int)pfGimpPluginMenuRegister(PLUGIN_NAME, PLUGIN_MENUPATH);
 	if(!status)	::Msg("gimp_plugin_menu_register() failed!");
 }
 
 void	ImgProc(Dll &libGimp, GimpDrawable *pDrawable);
 
-void	Run(PCSTR psName, int srcNum, const GimpParam *pSrc, int *pDstNum, GimpParam **ppDst) {
+void	Run(PCSTR psName, int srcNum, const GimpParam *pSrc, int *pDstNum, GimpParam **ppDst)
+{
 	static GimpParam	values[1];
+	Dll	libGimp("libgimp-2.0-0.dll");	if(libGimp.Invalid())	return;
+
+	Func pfGimpDrawableGet	= libGimp.GetFunction("gimp_drawable_get");
+	Func pfGimpDrawableDetach = libGimp.GetFunction("gimp_drawable_detach");
+	Func pfGimpDisplaysFlush = libGimp.GetFunction("gimp_displays_flush");
 
 	*pDstNum	= 1;
 	*ppDst		= values;
 	values[0].type	= GIMP_PDB_STATUS;
 	values[0].data.d_status	= GIMP_PDB_SUCCESS;
 	
-	int runMode = values[0].data.d_int32;
-	if(runMode != GIMP_RUN_INTERACTIVE)	::Msg("Hello world!");
+	GimpDrawable *pDrawable = (GimpDrawable *)pfGimpDrawableGet(pSrc[2].data.d_drawable);
+
+	::ImgProc(libGimp, pDrawable);
+	pfGimpDisplaysFlush();
+	pfGimpDrawableDetach(pDrawable);
+}
+
+typedef union _ARGB {
+	BYTE c[4];
+	struct {	BYTE b, g, r, a;	};
+	UINT32 dw;
+} ARGB;
+
+void	ImgProc(Dll &libGimp, GimpDrawable *pDrawable) {
+	GimpPixelRgn	rgnDst, rgnSrc;
+	Func	pfGimpMaskBounds = libGimp.GetFunction("gimp_drawable_mask_bounds");
+	Func	pfGimpDrawableBpp = libGimp.GetFunction("gimp_drawable_bpp");
+	Func	pfGimpPixelRgnInit = libGimp.GetFunction("gimp_pixel_rgn_init");
+	Func	pfGimpDrawableFlush = libGimp.GetFunction("gimp_drawable_flush");
+	Func	pfGimpDrawableMergeShadow = libGimp.GetFunction("gimp_drawable_merge_shadow");
+	Func	pfGimpDrawableUpdate = libGimp.GetFunction("gimp_drawable_update");
+	Func	pfGimpPixelRgnGetRect = libGimp.GetFunction("gimp_pixel_rgn_get_rect");
+	Func	pfGimpPixelRgnSetRect = libGimp.GetFunction("gimp_pixel_rgn_set_rect");
+	Func	pfGimpTileCacheNTiles = libGimp.GetFunction("gimp_tile_cache_ntiles");
+	Func	pfGimpTileWidth = libGimp.GetFunction("gimp_tile_width");
+
+	int x1, y1, x2, y2;
+	pfGimpMaskBounds(pDrawable->drawable_id, &x1, &y1, &x2, &y2);
+	int channels = (int)pfGimpDrawableBpp(pDrawable->drawable_id);
+	int width = x2 - x1;
+	int height = y2 - y1;
+	pfGimpPixelRgnInit(&rgnDst, pDrawable, x1, y1, width, height, true, true);
+	pfGimpPixelRgnInit(&rgnSrc, pDrawable, x1, y1, width, height, false, false);
+
+	std::vector<ARGB>	buf(width * height);
+
+	pfGimpPixelRgnGetRect(&rgnSrc, &buf[0], x1, y1, width, height);
+	
+#define DRAW_SCREEN(x, y)	(BYTE)(255.0 - (double)((255 - (x)) * (255 - (y))) / 255.0)
+	int displacement = 3;
+	ARGB white = {0xFFFFFFFF};
+	
+	REP(y, height) REP(x, width) {
+		ARGB	pixel		= *(ARGB *)&buf[width * y + x];
+		ARGB	red		= (x > displacement) ? *(ARGB *)&buf[width * y + (x - displacement)] : white;
+		ARGB	cyan	= (x < width - displacement) ? *(ARGB *)&buf[width * y + (x + displacement)]: white;
+
+		pixel.r	= DRAW_SCREEN(pixel.r, red.r);
+		pixel.g	= DRAW_SCREEN(pixel.g, cyan.g);
+		pixel.b	= DRAW_SCREEN(pixel.b, cyan.b);
+
+		*(ARGB *)&buf[width * y + x]	= pixel;
+	}
+
+	pfGimpPixelRgnSetRect(&rgnDst, &buf[0], x1, y1, width, height);
+
+	pfGimpDrawableFlush(pDrawable);
+	pfGimpDrawableMergeShadow(pDrawable->drawable_id, true);
+	pfGimpDrawableUpdate(pDrawable->drawable_id, x1, y1, width, height);
 }
