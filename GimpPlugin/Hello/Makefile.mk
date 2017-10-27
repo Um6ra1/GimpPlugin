@@ -1,5 +1,5 @@
 # Makefile
-TGT	= VsHello
+TGT = VsHello
 OBJS = Main.obj
 
-include ../Makefile.in
+include "../Makefile.in"
