@@ -3,9 +3,10 @@
 #include <vector>
 #include "../GimpCommon.h"
 #include "../Dll.h"
-#include "../Macros.h"
 
 #pragma comment(lib, "user32.lib")
+
+#define REP(i, max) for(int i = 0; i < max; i ++)
 
 void Query();
 void Run(PCSTR psName, int params, const GimpParam *pSrc, int *pReturns, GimpParam **ppDst);
