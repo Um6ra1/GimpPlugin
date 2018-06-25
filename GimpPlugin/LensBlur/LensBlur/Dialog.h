@@ -2,12 +2,8 @@
 #include <Windows.h>
 
 typedef struct _PLUGIN_PARAMS {
-	int	lineNum;
-	int	degCornerAngX100;	// Sharpness
-	int	offset;	// Offset radius
-	int	variation;	// Rondomness
-	int	bFill;
-	int	bLeaveSelection;
+	char kernelFilename[256];
+	int radius;
 } PLUGIN_PARAMS;
 
 int	DoModal(HINSTANCE hInst, PLUGIN_PARAMS *pParams);

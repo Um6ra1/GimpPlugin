@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma comment(lib, "user32.lib")
+
 void	Msg(PCSTR psFmt, ...) {
 #define MSG_BUF_LEN	0x200
 	va_list ap;

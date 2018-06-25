@@ -112,9 +112,9 @@ void ImgProc(Dll &libGimp, GimpDrawable *pDrawable) {
 	pfGimpPixelRgnInit(&rgnDst, pDrawable, x1, y1, width, height, true, true);
 	pfGimpPixelRgnInit(&rgnSrc, pDrawable, x1, y1, width, height, false, false);
 	
-	if(channels != 4) { ::Msg("Channes != 4"); return; }
+	if(channels != 4) { Msg("Channes != 4"); return; }
 
-	std::vector<ARGB>	buf(width * height);
+	std::vector<ARGB> buf(width * height), buf2(width * height);
 
 	pfGimpPixelRgnGetRect(&rgnSrc, &buf[0], x1, y1, width, height);
 	
@@ -123,18 +123,19 @@ void ImgProc(Dll &libGimp, GimpDrawable *pDrawable) {
 	ARGB white = {0xFFFFFFFF};
 	
 	REP(y, height) REP(x, width) {
+		ARGB &pixel2 = *(ARGB *)&buf2[width * y + x];
 		ARGB &pixel = *(ARGB *)&buf[width * y + x];
 		ARGB red = (x > displacement) ? *(ARGB *)&buf[width * y + (x - displacement)] : white;
 		ARGB cyan = (x < width - displacement) ? *(ARGB *)&buf[width * y + (x + displacement)]: white;
 
-		pixel.r = DRAW_SCREEN(pixel.r, red.r);
-		pixel.g = DRAW_SCREEN(pixel.g, cyan.g);
-		pixel.b = DRAW_SCREEN(pixel.b, cyan.b);
+		pixel2.r = DRAW_SCREEN(pixel.r, red.r);
+		pixel2.g = DRAW_SCREEN(pixel.g, cyan.g);
+		pixel2.b = DRAW_SCREEN(pixel.b, cyan.b);
 
 		//*(ARGB *)&buf[width * y + x]	= pixel;
 	}
 
-	pfGimpPixelRgnSetRect(&rgnDst, &buf[0], x1, y1, width, height);
+	pfGimpPixelRgnSetRect(&rgnDst, &buf2[0], x1, y1, width, height);
 
 	pfGimpDrawableFlush(pDrawable);
 	pfGimpDrawableMergeShadow(pDrawable->drawable_id, true);
