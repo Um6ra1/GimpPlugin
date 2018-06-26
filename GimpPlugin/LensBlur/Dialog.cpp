@@ -3,6 +3,7 @@
 #include <commctrl.h>
 
 // If 'primary language id not a number' caused, insert '#include <Windows.h>' to Resource.rc
+// If 'DS_SETFONT' error caused, insert '#include <winres.h>'
 
 #define REP(idx, max)	for(int idx = 0, idx##Max = max; idx < idx##Max; idx ++)
 	

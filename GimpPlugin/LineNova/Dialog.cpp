@@ -45,15 +45,15 @@ LRESULT CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		
 		case WM_INITDIALOG: {
-			hEdits[0]	= ::GetDlgItem(hWnd, IDC_EDIT_LINE);
-			hEdits[1]	= ::GetDlgItem(hWnd, IDC_EDIT_SHARP);
-			hEdits[2]	= ::GetDlgItem(hWnd, IDC_EDIT_OFFSET);
-			hEdits[3]	= ::GetDlgItem(hWnd, IDC_EDIT_RAND);
+			hEdits[0] = ::GetDlgItem(hWnd, IDC_EDIT_LINE);
+			hEdits[1] = ::GetDlgItem(hWnd, IDC_EDIT_SHARP);
+			hEdits[2] = ::GetDlgItem(hWnd, IDC_EDIT_OFFSET);
+			hEdits[3] = ::GetDlgItem(hWnd, IDC_EDIT_RAND);
 			
-			hSpins[0]	= ::GetDlgItem(hWnd, IDC_SPIN_LINE);
-			hSpins[1]	= ::GetDlgItem(hWnd, IDC_SPIN_SHARP);
-			hSpins[2]	= ::GetDlgItem(hWnd, IDC_SPIN_OFFSET);
-			hSpins[3]	= ::GetDlgItem(hWnd, IDC_SPIN_RAND);
+			hSpins[0] = ::GetDlgItem(hWnd, IDC_SPIN_LINE);
+			hSpins[1] = ::GetDlgItem(hWnd, IDC_SPIN_SHARP);
+			hSpins[2] = ::GetDlgItem(hWnd, IDC_SPIN_OFFSET);
+			hSpins[3] = ::GetDlgItem(hWnd, IDC_SPIN_RAND);
 			
 			REP(i, VAL_NUM) {
 				::SendMessage(hSpins[i], UDM_SETBUDDY, (WPARAM)hEdits[i], 0);
@@ -61,12 +61,13 @@ LRESULT CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 				::SendMessage(hSpins[i], UDM_SETPOS, 0, (LPARAM)MAKELONG(pParam[i], 0));
 			}
 
-			hChecks[0]	= ::GetDlgItem(hWnd, IDC_CHECK_FILL);
+			hChecks[0] = ::GetDlgItem(hWnd, IDC_CHECK_FILL);
 			hChecks[1] = ::GetDlgItem(hWnd, IDC_CHECK_SELECTION);
 			::SendMessage(hChecks[0], BM_SETCHECK, g_pParams->bFill, 0);
 			::SendMessage(hChecks[1], BM_SETCHECK, g_pParams->bLeaveSelection, 0);
+			return true;
 		}
-		default:	return false;
+		default: return false;
 	}
 	return true;
 }

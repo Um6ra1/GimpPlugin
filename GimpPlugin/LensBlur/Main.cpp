@@ -6,8 +6,8 @@
 #include <ctime>
 #include <vector>
 #include <algorithm>
-#include "../../GimpCommon.h"
-#include "../../Dll.h"
+#include "../GimpCommon.h"
+#include "../Dll.h"
 #include "Dialog.h"
 #include "FFTImage.h"
 #include "BmpUtil.h"
@@ -70,7 +70,7 @@ void Query() {
 	);
 
 	int status = (int)gimp_plugin_menu_register(PLUGIN_NAME, PLUGIN_MENUPATH);
-	if(!status)	::Msg("gimp_plugin_menu_register() failed!");
+	if(!status)	Msg("gimp_plugin_menu_register() failed!");
 }
 
 void Proc(Dll &libGimp, GimpDrawable *pDrawable) {
@@ -100,7 +100,7 @@ void Proc(Dll &libGimp, GimpDrawable *pDrawable) {
 	ImgProc::Image img(w, h);
 	gimp_pixel_rgn_get_rect(&rgnSrc, &img.buf[0], x1, y1, w, h);
 
-	//	::Msg("%08X, %08X", *(UINT32 *)&src[0], *(UINT32 *)&src[4]);
+	//	Msg("%08X, %08X", *(UINT32 *)&src[0], *(UINT32 *)&src[4]);
 	CBitmap ker;
 	if (ker.Load(g_PluginParams.kernelFilename) < 0) Msg("Failed to load lernel!");
 	ImgProc::FFTConvImage(img, ker.Image());

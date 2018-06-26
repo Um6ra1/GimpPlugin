@@ -17,27 +17,12 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FFTImage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BmpUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dialog.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FFTImage.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Typedefs.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BmpUtil.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
