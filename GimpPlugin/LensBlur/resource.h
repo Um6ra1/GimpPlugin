@@ -1250,6 +1250,13 @@
 #define IDC_EDIT_KerFilename            1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_Browse               1001
+#define IDC_EDIT_Radius                 1002
+#define IDC_SPIN_Radius                 1003
+#define IDC_RADIO_UseKer                1004
+#define IDC_RADIO2                      1005
+#define IDC_RADIO_UseFile               1005
+#define IDC_EDIT_Factor                 1006
+#define IDC_SPIN_Factor                 1007
 #define CF_GDIOBJLAST                   0x03FF
 #define _WIN32_WINNT_NT4                0x0400
 #define _WIN32_IE_IE40                  0x0400
@@ -1600,10 +1607,10 @@
 #define LVS_TYPESTYLEMASK               0xfc00
 #define SPVERSION_MASK                  0x0000FF00
 #define HTERROR                         -2
-#define IDC_STATIC                      -1
 #define PWR_FAIL                        -1
 #define UNICODE_NOCHAR                  0xFFFF
 #define HTTRANSPARENT                   -1
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
@@ -1611,7 +1618,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        104
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

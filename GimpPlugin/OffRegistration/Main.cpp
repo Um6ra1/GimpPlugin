@@ -73,23 +73,25 @@ void Query() {
 }
 
 #define DRAW_MUL(x, y)	(BYTE)((double)((x) * (y)) / 255.0)
-#define DRAW_SCREEN(x, y)	(BYTE)(255.0 - (double)((255 - (x)) * (255 - (y))) / 255.0)
+#define DRAW_SCREEN(x, y)	(u8)((x) + (y) - (x)*(y)/255.0)
+#define IN_RANGE(x, Min, Max) ( (Min) <= (x) && (x) < (Max) )
 void Apply(std::vector<RGBA> &img, int w, int h, int dx1, int dy1, int dx2, int dy2) {
-	std::vector<RGBA> buf(w*h);
+	std::vector<RGBA> d(w*h);
 	RGBA white = { 0xFFFFFFFF };
 
 	REP(y, h) REP(x, w) {
+		RGBA red = (IN_RANGE(x, 0, w) && IN_RANGE(y - dy1, 0, h)) ? img[w * (y - dy1) + (x - dx1)] : white;
+		RGBA cyan = (IN_RANGE(x - dx2, 0, w) && IN_RANGE(y - dy2, 0, h)) ? img[w * (y - dy2) + (x - dx2)] : white;
 		RGBA pixel = img[w * y + x];
-		RGBA red = (x > dx1 && y > dy1) ? img[w*(y-dy1) + (x-dx1)] : white;
-		RGBA cyan = (x < w-dx2 && y < h-dy2) ? img[w*(y+dy2) + (x+dx2)] : white;
+
 
 		pixel.r = DRAW_SCREEN(pixel.r, red.r);
 		pixel.g = DRAW_SCREEN(pixel.g, cyan.g);
 		pixel.b = DRAW_SCREEN(pixel.b, cyan.b);
 
-		buf[w * y + x] = pixel;
+		d[w * y + x] = pixel;
 	}
-	img.swap(buf);
+	img.swap(d);
 }
 
 void Proc(Dll &libGimp, GimpDrawable *pDrawable) {

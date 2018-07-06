@@ -2,7 +2,7 @@
  * @file		FFTImage.cpp
  * @brief	FFT for image processing
  * @author	Um6r41
- * @date 2018/3/05
+ * @date 2018/6/29
  */
 
 #include "FFTImage.h"
@@ -142,10 +142,8 @@ void FFT2D(Complex *pDat, int width, int height, TransDir dir) {
 	}
 }
 
-void	Spectrum2MagnitudeImage(u32 *pDst, Complex *pSrc, int width, int height);
-
 struct ComplexImage {
-	int	width, height;
+	int width, height;
 	int dx, dy;
 	std::vector<Complex>	buf;
 	
@@ -153,6 +151,19 @@ struct ComplexImage {
 		dx = (width - src.width) / 2, dy = (height - src.height) / 2;
 		REP(y, src.height) REP(x, src.width)
 			buf[width * (y+dy) + x+dx] = Complex(src.buf[src.width * y + x].c[channel] * scale, 0);
+	}
+	void	SetCircle(double r) {
+		dx = width / 2, dy = height / 2;
+		double sum = 0;
+		REP(y, height) REP(x, width) {
+			int d2 = pow(x-dx,2)+pow(y-dy,2);
+			if( d2 < r*r ) {
+				double ker = tanh(8*sqrt(d2) / r);
+				buf[width * y + x] = Complex(ker, 0);
+				sum += ker;
+			}
+		}
+		REP(y, height) REP(x, width) buf[width * y + x] /= sum;
 	}
 	void	GetImage(Image &dst, int channel) {
 		REP(y, dst.height) REP(x, dst.width)
@@ -165,12 +176,12 @@ struct ComplexImage {
 
 		// Padding
 		RREP(y, dy, src.height + dy) {
-			REP(x, dx)							buf[width * y + x]	= buf[width * y + (0 + dx)];
-			RREP(x, src.width + dx, width)	buf[width * y + x]	= buf[width * y + (src.width - 1 + dx)];
+			REP(x, dx) buf[width * y + x] = buf[width * y + (0 + dx)];
+			RREP(x, src.width + dx, width)	buf[width * y + x] = buf[width * y + (src.width - 1 + dx)];
 		}
 		REP(x, width) {
-			REP(y, dy)							buf[width * y + x]	= buf[width * (0 + dy) + x];
-			RREP(y, src.height + dy, height)	buf[width * y + x]	= buf[width * (src.height - 1 + dy) + x];
+			REP(y, dy) buf[width * y + x] = buf[width * (0 + dy) + x];
+			RREP(y, src.height + dy, height) buf[width * y + x] = buf[width * (src.height - 1 + dy) + x];
 		}
 	}
 	void	GetImageLog(Image &dst, int channel, int factor) {
@@ -183,17 +194,17 @@ struct ComplexImage {
 		REP(y, dst.height) REP(x, dst.width) {
 			double norm2	= buf[width * (y+dy) + x+dx].Abs2();
 			double m = mag[dst.width * y + x] = (norm2 >= 1.0) ? ::log10(norm2) / 2.0 : 0;
-			if(max < m)	max = m;
+			if(max < m) max = m;
 		}
 		if(max < 1e-10)	max = 1.0;
-		REP(y, dst.height) REP(x, dst.width)	dst.buf[dst.width * y + x].c[channel] = NORM255(mag[dst.width * y + x], max);
+		REP(y, dst.height) REP(x, dst.width) dst.buf[dst.width * y + x].c[channel] = NORM255(mag[dst.width * y + x], max);
 	}
 	
-	void Zero() {	::memset(&buf[0], 0, buf.size() * sizeof(Complex));	}
-	void FFT(TransDir dir) {	::FFT2D(&buf[0], width, height, dir);	}
+	void Zero() { ::memset(&buf[0], 0, buf.size() * sizeof(Complex)); }
+	void FFT(TransDir dir) { ::FFT2D(&buf[0], width, height, dir); }
 	void FFTShift() {
 		REV(y, height / 2) REV(x, width / 2) {
-			int	idx = width * y + x;
+			int idx = width * y + x;
 			std::swap(buf[idx], buf[idx + (height + 1) * width / 2]);
 			std::swap(buf[idx + width / 2], buf[idx + height * width / 2]);
 		}
@@ -217,6 +228,25 @@ void ImgProc::FFTMagnitudeImage(Image &img) {
 		ciImg.FFT(TdForward);
 		ciImg.FFTShift();
 		ciImg.GetImageMagnitude(img, c);
+	}
+}
+
+void ImgProc::FFTConvCircle(Image &img, double radius, double factor) {
+	ComplexImage ciImg(NEXT_POW2(img.width), NEXT_POW2(img.height));
+	ComplexImage ciKer(NEXT_POW2(img.width), NEXT_POW2(img.height));
+
+	ciKer.Zero();
+	ciKer.SetCircle(radius);
+	ciKer.FFTShift();
+	ciKer.FFT(TdForward);
+	
+	REP(c, 3) {
+		ciImg.Zero();
+		ciImg.SetImageLog(img, c, factor);
+		ciImg.FFT(TdForward);
+		ciImg *= ciKer;
+		ciImg.FFT(TdBackward);
+		ciImg.GetImageLog(img, c, factor);
 	}
 }
 

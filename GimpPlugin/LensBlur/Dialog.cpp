@@ -1,5 +1,7 @@
+
+#define _CRT_SECURE_NO_WARNINGS 1
 #include "Dialog.h"
-#include "Resource.h"
+#include "resource.h"
 #include <commctrl.h>
 
 // If 'primary language id not a number' caused, insert '#include <Windows.h>' to Resource.rc
@@ -18,18 +20,22 @@ int	DoModal(HINSTANCE hInst, PLUGIN_PARAMS *pParams) {
 typedef struct _RANGE { int min, max; } RANGE;
 
 LRESULT CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
-//	static HWND	hEdits[VAL_NUM];
-//	static HWND	hSpins[VAL_NUM];
-//	static HWND	hChecks[CHK_NUM];
 //	static RANGE ranges[VAL_NUM] = {{1, 4096}, {0, 10 * 100}, {0, 4096}, {0, 4096}};
-	static HWND hEditFilename;
-	//static int	*pParam = (int *)g_pParams;
+	static HWND hEditFilename, hEditRadius, hEditFactor;
+	static HWND hSpinRadius, hSpinFactor;
+	static HWND hRadioUFile, hRadioUKer;
+	char val[512];
 	
 	switch(msg) {
 		case WM_COMMAND: {
 			switch(LOWORD(wp)) {
 				case IDOK:
-					GetWindowText(hEditFilename, g_pParams->kernelFilename, sizeof(g_pParams->kernelFilename));
+					GetWindowText(hEditFilename, g_pParams->noyauNonFichier, sizeof(g_pParams->noyauNonFichier));
+					GetWindowText(hEditRadius, val, sizeof(val));
+					g_pParams->rayon = atoi(val);
+					GetWindowText(hEditFactor, val, sizeof(val));
+					g_pParams->facteur = atof(val);
+
 					//pParam[i]	= ::atoi(sValue);
 					//g_pParams->bFill = ::SendMessage(hChecks[0], BM_GETCHECK, 0, 0);
 					//g_pParams->bLeaveSelection = ::SendMessage(hChecks[1], BM_GETCHECK, 0, 0);
@@ -45,7 +51,18 @@ LRESULT CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 		
 		case WM_INITDIALOG: {
 			hEditFilename = GetDlgItem(hWnd, IDC_EDIT_KerFilename);
-			SetWindowText(hEditFilename, g_pParams->kernelFilename);
+			hEditRadius = GetDlgItem(hWnd, IDC_EDIT_Radius);
+			hEditFactor = GetDlgItem(hWnd, IDC_EDIT_Factor);
+
+			SetWindowText(hEditFilename, g_pParams->noyauNonFichier);
+			SetWindowText(hEditRadius, _itoa(g_pParams->rayon, val, 10));
+			SetWindowText(hEditFactor, _itoa(g_pParams->facteur, val, 10));
+
+			hSpinRadius = GetDlgItem(hWnd, IDC_SPIN_Radius);
+			hSpinFactor = GetDlgItem(hWnd, IDC_SPIN_Factor);
+			hRadioUFile = GetDlgItem(hWnd, IDC_RADIO_UseFile);
+			hRadioUKer = GetDlgItem(hWnd, IDC_RADIO_UseKer);
+
 /*			hEdits[0]	= ::GetDlgItem(hWnd, IDC_EDIT_LINE);
 			hEdits[1]	= ::GetDlgItem(hWnd, IDC_EDIT_SHARP);
 			hEdits[2]	= ::GetDlgItem(hWnd, IDC_EDIT_OFFSET);

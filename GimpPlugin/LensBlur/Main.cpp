@@ -102,7 +102,7 @@ void Proc(Dll &libGimp, GimpDrawable *pDrawable) {
 
 	//	Msg("%08X, %08X", *(UINT32 *)&src[0], *(UINT32 *)&src[4]);
 	CBitmap ker;
-	if (ker.Load(g_PluginParams.kernelFilename) < 0) Msg("Failed to load lernel!");
+	if (ker.Load(g_PluginParams.noyauNonFichier) < 0) Msg("Failed to load lernel!");
 	ImgProc::FFTConvImage(img, ker.Image());
 
 	gimp_pixel_rgn_set_rect(&rgnDst, &img.buf[0], x1, y1, w, h);

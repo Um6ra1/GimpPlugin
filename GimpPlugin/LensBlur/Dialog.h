@@ -1,9 +1,16 @@
 #pragma once
 #include <Windows.h>
 
+typedef enum {
+	UtilFichier,
+	UtilNoyau,
+} QuelMethode;
+
 typedef struct _PLUGIN_PARAMS {
-	char kernelFilename[256];
-	int radius;
+	char noyauNonFichier[256];
+	int rayon;
+	double facteur;
+	QuelMethode qm;
 } PLUGIN_PARAMS;
 
 int	DoModal(HINSTANCE hInst, PLUGIN_PARAMS *pParams);
