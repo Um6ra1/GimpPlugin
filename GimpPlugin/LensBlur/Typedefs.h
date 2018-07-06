@@ -45,10 +45,10 @@ typedef wchar_t	TCHAR;
 typedef char	TCHAR;
 #endif
 
-typedef void        *LPVOID;
-typedef TCHAR		*LPSTR;
-typedef const TCHAR	*LPCSTR;
-typedef LPVOID  HANDLE;
+typedef void *LPVOID;
+typedef TCHAR *LPSTR;
+typedef const TCHAR *LPCSTR;
+typedef LPVOID HANDLE;
 
 #else
 //#include <Windows.h>
@@ -56,14 +56,14 @@ typedef LPVOID  HANDLE;
 
 typedef union _RGBA {
 	u8 c[4];
-	u8 a, r, g, b;
+	struct{ u8 b, g, r, a; };
 	u32 dw;
 } RGBA;
 
 #include <vector>
 namespace ImgProc {
-	struct Point {	int	x, y;	};
-	struct Size {	int	width, height;	};
+	struct Point { int	x, y; };
+	struct Size { int width, height; };
 	
 	struct	Image {
 		std::vector<RGBA>	buf;
